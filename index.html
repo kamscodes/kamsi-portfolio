@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kamsi — Backend Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#00ff88;--green-dim:#00cc6a;--green-muted:#004d29;--green-glow:rgba(0,255,136,0.15);
+  --bg:#0a0d0a;--surface:rgba(12,18,12,0.92);--border:#1a2e1a;
+  --text:#c8ffd4;--text-dim:#5a8c6a;--text-muted:#2d4a35;
+  --amber:#ffaa00;--blue:#44aaff;--purple:#bb88ff;
+}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);font-size:13px;line-height:1.6;min-height:100vh;overflow-x:hidden;cursor:none}
+#cursor{position:fixed;width:10px;height:10px;background:var(--green);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:transform 0.1s,background 0.2s;mix-blend-mode:screen}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid var(--green);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width 0.2s,height 0.2s,opacity 0.2s;opacity:0.5}
+#matrix-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.15}
+#particle-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.035) 2px,rgba(0,0,0,0.035) 4px);pointer-events:none;z-index:9999}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--green-muted);border-radius:2px}
+.terminal-window{position:relative;z-index:10;max-width:900px;margin:0 auto}
+.titlebar{position:sticky;top:0;z-index:100;background:rgba(10,13,10,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;transition:transform 0.2s,box-shadow 0.2s;cursor:pointer}
+.dot.r{background:#ff5f57}.dot.y{background:#ffbd2e}.dot.g{background:#28ca41}
+.dot:hover{transform:scale(1.4)}
+.dot.r:hover{box-shadow:0 0 8px #ff5f57}.dot.y:hover{box-shadow:0 0 8px #ffbd2e}.dot.g:hover{box-shadow:0 0 8px #28ca41}
+.titlebar-name{margin-left:auto;color:var(--text-dim);font-size:11px}
+.titlebar-name span{color:var(--green)}
+.type-cursor{display:inline-block;width:7px;height:12px;background:var(--green);vertical-align:text-bottom;margin-left:2px;animation:tcblink 1.1s step-end infinite}
+@keyframes tcblink{0%,100%{opacity:1}50%{opacity:0}}
+nav{border-bottom:1px solid var(--border);background:rgba(10,13,10,0.9);backdrop-filter:blur(8px);padding:0 20px;display:flex}
+nav a{color:var(--text-dim);text-decoration:none;font-size:11px;padding:10px 16px;border-bottom:2px solid transparent;transition:color 0.2s,text-shadow 0.2s;letter-spacing:0.05em}
+nav a::before{content:'# ';color:var(--text-muted)}
+nav a:hover,nav a.active{color:var(--green);text-shadow:0 0 12px rgba(0,255,136,0.5);border-bottom-color:var(--green)}
+main{padding:40px 24px 80px}
+section{margin-bottom:64px}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.6s cubic-bezier(.4,0,.2,1),transform 0.6s cubic-bezier(.4,0,.2,1)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-up.d1{transition-delay:0.1s}.fade-up.d2{transition-delay:0.2s}.fade-up.d3{transition-delay:0.3s}
+.prompt{display:flex;align-items:baseline;gap:8px;margin-bottom:24px;font-size:12px}
+.prompt-user{color:var(--green);font-weight:700}
+.prompt-at{color:var(--text-dim)}
+.prompt-dir{color:var(--blue)}
+.prompt-char{color:var(--green);margin:0 4px}
+.prompt-cmd{color:var(--text);font-size:13px}
+.section-label{font-size:10px;letter-spacing:0.2em;color:var(--text-muted);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.hero-output{padding:24px;background:var(--surface);backdrop-filter:blur(12px);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:4px;margin-bottom:16px;transition:box-shadow 0.3s,transform 0.3s;transform-style:preserve-3d}
+.hero-output:hover{box-shadow:0 0 30px rgba(0,255,136,0.12)}
+.hero-name{font-size:30px;font-weight:700;color:var(--green);line-height:1.1;margin-bottom:4px;letter-spacing:-1px;text-shadow:0 0 20px rgba(0,255,136,0.3)}
+.hero-role{font-size:13px;color:var(--text-dim);margin-bottom:16px}
+.hero-role span{color:var(--amber)}
+.hero-bio{font-size:12px;color:var(--text);max-width:560px;line-height:1.9;border-top:1px solid var(--border);padding-top:16px;margin-top:16px}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tag{font-size:10px;padding:3px 10px;border:1px solid var(--green-muted);color:var(--green-dim);border-radius:2px;letter-spacing:0.05em;transition:all 0.2s;cursor:default;position:relative;overflow:hidden}
+.tag::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,136,0.1),transparent);transition:left 0.4s}
+.tag:hover::before{left:100%}
+.tag:hover{border-color:var(--green);color:var(--green);transform:translateY(-1px)}
+.tag.core{border-color:var(--green);color:var(--green);font-weight:700}
+.status-line{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text-dim);padding:10px 0;flex-wrap:wrap}
+.status-dot{display:inline-flex;align-items:center;gap:5px;color:var(--green)}
+.status-dot::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite;box-shadow:0 0 6px var(--green)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.cv-btn-row{margin-top:16px;display:flex;gap:12px;flex-wrap:wrap}
+.cv-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-decoration:none;border-radius:4px;transition:all 0.3s;position:relative;overflow:hidden;cursor:pointer}
+.cv-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,136,0.15),transparent);transition:left 0.5s}
+.cv-btn:hover::before{left:100%}
+.cv-btn-primary{background:rgba(0,255,136,0.1);border:1px solid var(--green);color:var(--green);font-weight:700}
+.cv-btn-primary:hover{background:rgba(0,255,136,0.2);box-shadow:0 0 20px rgba(0,255,136,0.25);transform:translateY(-2px)}
+.cv-btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
+.cv-btn-secondary:hover{border-color:var(--green);color:var(--green);box-shadow:0 0 14px rgba(0,255,136,0.15);transform:translateY(-2px)}
+.cv-btn-icon{font-size:14px;transition:transform 0.2s}
+.cv-btn:hover .cv-btn-icon{transform:scale(1.2)}
+.skills-group{margin-bottom:20px}
+.skills-group-label{font-size:10px;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px}
+.ls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ls-item{background:var(--surface);backdrop-filter:blur(8px);border:1px solid var(--border);padding:12px 14px;border-radius:3px;cursor:default;transition:border-color 0.25s,transform 0.25s,box-shadow 0.25s;transform-style:preserve-3d;position:relative;overflow:hidden}
+.ls-item::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(0,255,136,0.07),transparent 60%);opacity:0;transition:opacity 0.3s}
+.ls-item:hover::after{opacity:1}
+.ls-item:hover{border-color:var(--green);transform:translateY(-3px) rotateX(4deg);box-shadow:0 8px 24px rgba(0,255,136,0.1)}
+.ls-item.primary{border-color:var(--green-muted)}
+.ls-item-name{color:var(--green);font-size:12px;font-weight:500;margin-bottom:2px;transition:text-shadow 0.2s}
+.ls-item:hover .ls-item-name{text-shadow:0 0 10px rgba(0,255,136,0.6)}
+.ls-item-type{color:var(--text-muted);font-size:10px}
+.ls-item-icon{color:var(--amber);margin-right:4px;font-size:10px;transition:transform 0.2s}
+.ls-item:hover .ls-item-icon{transform:scale(1.3) rotate(10deg)}
+.exp-list{display:flex;flex-direction:column}
+.exp-item{padding:18px 0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;transition:padding 0.2s,background 0.2s}
+.exp-item:last-child{border-bottom:none}
+.exp-item:hover{background:var(--surface);backdrop-filter:blur(8px);padding:18px 12px;margin:0 -12px;border-radius:4px}
+.exp-company{color:var(--green);font-size:13px;font-weight:700;margin-bottom:2px;transition:text-shadow 0.2s}
+.exp-item:hover .exp-company{text-shadow:0 0 10px rgba(0,255,136,0.4)}
+.exp-title{color:var(--text-dim);font-size:11px;margin-bottom:10px}
+.exp-date{color:var(--text-muted);font-size:10px;white-space:nowrap}
+.exp-bullets{list-style:none;padding:0;display:flex;flex-direction:column;gap:5px}
+.exp-bullets li{font-size:11px;color:var(--text-dim);padding-left:14px;position:relative;line-height:1.6;transition:color 0.2s,transform 0.2s}
+.exp-bullets li::before{content:'→';position:absolute;left:0;color:var(--green-muted);font-size:10px;transition:color 0.2s}
+.exp-bullets li:hover{color:var(--text);transform:translateX(3px)}
+.exp-bullets li:hover::before{color:var(--green)}
+.git-log{display:flex;flex-direction:column}
+
+/* ── Project card ── */
+.commit{display:flex;flex-direction:column;padding:20px;margin-bottom:12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);backdrop-filter:blur(8px);transition:box-shadow 0.25s,transform 0.25s,border-color 0.25s;transform-style:preserve-3d}
+.commit:hover{border-color:rgba(0,255,136,0.3);box-shadow:0 0 30px rgba(0,255,136,0.08);transform:translateY(-2px)}
+.commit-top{display:grid;grid-template-columns:80px 1fr;gap:16px;align-items:start}
+.commit-hash{color:var(--amber);font-size:11px;font-weight:700;letter-spacing:0.05em;padding-top:2px;transition:text-shadow 0.2s}
+.commit:hover .commit-hash{text-shadow:0 0 10px rgba(255,170,0,0.5)}
+.commit-title{color:var(--text);font-size:13px;font-weight:500;margin-bottom:6px;transition:color 0.2s}
+.commit:hover .commit-title{color:var(--green)}
+.commit-body{color:var(--text-dim);font-size:11px;line-height:1.75;margin-bottom:8px}
+.commit-features{list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:4px}
+.commit-features li{font-size:10px;color:var(--text-muted);padding-left:12px;position:relative;line-height:1.5;transition:color 0.2s,transform 0.2s}
+.commit-features li::before{content:'▸';position:absolute;left:0;color:var(--green-muted);transition:color 0.2s}
+.commit-features li:hover{color:var(--text-dim);transform:translateX(4px)}
+.commit-features li:hover::before{color:var(--green)}
+.commit-meta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.commit-lang{font-size:10px;padding:2px 8px;border-radius:2px;letter-spacing:0.05em;transition:transform 0.15s,box-shadow 0.15s;cursor:default}
+.commit-lang:hover{transform:translateY(-2px)}
+.lang-java{background:#2a1a0a;color:var(--amber);border:1px solid #3a2000}
+.lang-java:hover{box-shadow:0 4px 12px rgba(255,170,0,0.2)}
+.lang-spring{background:#0a2a10;color:#6dff8a;border:1px solid #0a3a10}
+.lang-spring:hover{box-shadow:0 4px 12px rgba(109,255,138,0.2)}
+.lang-sql{background:#1a0a2a;color:var(--purple);border:1px solid #2a1050}
+.lang-jwt{background:#1a1a2a;color:var(--blue);border:1px solid #0a0a3a}
+.lang-ts{background:#0a1a2a;color:#60aaff;border:1px solid #0a2040}
+.lang-react{background:#0a1e2a;color:#5dd0f0;border:1px solid #0a2a38}
+.lang-docker{background:#0a1a28;color:#2496ed;border:1px solid #0a2040}
+.lang-docker:hover{box-shadow:0 4px 12px rgba(36,150,237,0.2)}
+.commit-link{font-size:10px;color:var(--blue);text-decoration:none;transition:color 0.2s,text-shadow 0.2s}
+.commit-link:hover{color:var(--green);text-shadow:0 0 8px rgba(0,255,136,0.5)}
+.commit-status{font-size:10px;color:var(--green);display:flex;align-items:center;gap:4px}
+.commit-status::before{content:'●';animation:blink 2s infinite}
+
+/* ── Live Preview iframe ── */
+.live-preview{margin-top:20px;border-radius:6px;overflow:hidden;border:1px solid var(--border);position:relative;background:#000}
+.preview-bar{
+  display:flex;align-items:center;gap:10px;padding:8px 14px;
+  background:rgba(10,13,10,0.98);border-bottom:1px solid var(--border);
+  font-size:10px;color:var(--text-muted);
+}
+.preview-bar-dots{display:flex;gap:5px}
+.preview-bar-dots span{width:8px;height:8px;border-radius:50%}
+.preview-bar-dots span:nth-child(1){background:#ff5f57}
+.preview-bar-dots span:nth-child(2){background:#ffbd2e}
+.preview-bar-dots span:nth-child(3){background:#28ca41}
+.preview-url{
+  flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:3px;padding:3px 10px;font-size:10px;color:var(--green-dim);
+  letter-spacing:0.03em;display:flex;align-items:center;gap:6px
+}
+.preview-url::before{content:'🔒';font-size:9px}
+.preview-live-badge{
+  font-size:9px;padding:2px 8px;border-radius:2px;
+  border:1px solid var(--green-muted);color:var(--green);
+  display:flex;align-items:center;gap:4px;letter-spacing:0.05em
+}
+.preview-live-badge::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+.preview-open-btn{
+  font-size:10px;color:var(--text-muted);text-decoration:none;padding:3px 8px;
+  border:1px solid var(--border);border-radius:3px;transition:all 0.2s;
+  font-family:'JetBrains Mono',monospace;
+}
+.preview-open-btn:hover{color:var(--green);border-color:var(--green);text-shadow:0 0 8px rgba(0,255,136,0.4)}
+
+/* iframe wrapper with clip + overlay effect */
+.iframe-wrap{position:relative;height:460px;overflow:hidden}
+.iframe-wrap iframe{
+  width:100%;height:600px;border:none;
+  transform:scale(0.82) translateY(-8%);
+  transform-origin:top center;
+  pointer-events:none;
+  transition:filter 0.4s;
+  filter:brightness(0.95) saturate(1.1);
+}
+.iframe-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 55%,var(--bg) 100%);
+  pointer-events:none;
+}
+.iframe-scanline{
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,136,0.015) 3px,rgba(0,255,136,0.015) 4px);
+  pointer-events:none;
+}
+/* loading shimmer shown before iframe loads */
+.iframe-loader{
+  position:absolute;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  transition:opacity 0.5s;z-index:2;
+}
+.iframe-loader.hidden{opacity:0;pointer-events:none}
+.loader-spinner{width:24px;height:24px;border:2px solid var(--green-muted);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:10px;color:var(--text-muted);letter-spacing:0.15em}
+
+.env-block{background:var(--surface);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:box-shadow 0.3s}
+.env-block:hover{box-shadow:0 0 24px rgba(0,255,136,0.07)}
+.env-row{display:flex;align-items:baseline;padding:10px 16px;border-bottom:1px solid var(--border);transition:background 0.2s,padding-left 0.2s;text-decoration:none;position:relative;overflow:hidden}
+.env-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--green);transform:scaleY(0);transition:transform 0.2s}
+.env-row:last-child{border-bottom:none}
+.env-row:hover{background:rgba(0,255,136,0.04);padding-left:22px}
+.env-row:hover::before{transform:scaleY(1)}
+.env-key{color:var(--amber);font-size:12px;min-width:120px}
+.env-eq{color:var(--text-muted);margin:0 8px}
+.env-val{color:var(--green);font-size:12px;flex:1}
+.env-val.link:hover{text-decoration:underline;color:var(--blue)}
+
+#loading{position:fixed;inset:0;background:#0a0d0a;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s,visibility 0.6s}
+#loading.done{opacity:0;visibility:hidden}
+.load-text{color:var(--green);font-size:12px;letter-spacing:0.15em;margin-bottom:20px;animation:glitch 2s infinite}
+.load-bar-wrap{width:240px;height:2px;background:var(--border);border-radius:1px;overflow:hidden}
+.load-bar{height:100%;width:0;background:var(--green);box-shadow:0 0 8px var(--green);border-radius:1px;transition:width 0.05s linear}
+.load-pct{color:var(--text-muted);font-size:10px;margin-top:8px}
+@keyframes glitch{0%,100%{text-shadow:0 0 10px var(--green)}49%{text-shadow:0 0 10px var(--green)}50%{text-shadow:-2px 0 red,2px 0 cyan}51%{text-shadow:0 0 10px var(--green)}}
+footer{position:relative;z-index:10;border-top:1px solid var(--border);background:rgba(10,13,10,0.9);backdrop-filter:blur(8px);padding:20px 24px;font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+footer span{color:var(--green-dim)}
+.footer-identity{display:flex;align-items:center;gap:10px}
+.footer-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;object-position:top center;border:1.5px solid var(--green-muted);box-shadow:0 0 8px rgba(0,255,136,0.2);flex-shrink:0;transition:border-color 0.2s,box-shadow 0.2s}
+.footer-avatar:hover{border-color:var(--green);box-shadow:0 0 14px rgba(0,255,136,0.4)}
+</style>
+</head>
+<body>
+<div id="loading">
+  <div class="load-text">INITIALIZING PORTFOLIO...</div>
+  <div class="load-bar-wrap"><div class="load-bar" id="load-bar"></div></div>
+  <div class="load-pct" id="load-pct">0%</div>
+</div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="matrix-canvas"></canvas>
+<canvas id="particle-canvas"></canvas>
+
+<div class="terminal-window" id="main-content" style="opacity:0;transition:opacity 0.8s">
+  <div class="titlebar">
+    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+    <div class="titlebar-name">kamsi@portfolio ~ <span>zsh</span><span class="type-cursor"></span></div>
+  </div>
+  <nav>
+    <a href="#about" class="active">about</a>
+    <a href="#skills">skills</a>
+    <a href="#experience">experience</a>
+    <a href="#projects">projects</a>
+    <a href="#contact">contact</a>
+  </nav>
+
+  <main>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">whoami</span></div>
+      <div class="hero-output fade-up d1" id="hero-card">
+        <div class="hero-name">Kamsi Oyinatumba</div>
+        <div class="hero-role">Backend Developer · <span>Java &amp; Spring Boot</span></div>
+        <div class="hero-bio">I build clean, secure, and production-grade backend systems. My core is <strong style="color:var(--green)">Java + Spring Boot</strong> — REST APIs, JWT auth pipelines, role-based access control, and database-driven architectures. Currently shipping <strong style="color:var(--green)">TrustVault</strong>, a fully-featured fintech escrow platform with a state-machine transaction engine, Paystack webhooks, automated KYC verification, and an enterprise admin control panel.</div>
+        <div class="tag-row">
+          <span class="tag core">Java</span><span class="tag core">Spring Boot</span><span class="tag core">Spring Security</span><span class="tag core">REST APIs</span>
+          <span class="tag">PostgreSQL</span><span class="tag">JPA / Hibernate</span><span class="tag">JWT</span><span class="tag">Docker</span><span class="tag">Git</span><span class="tag">Postman</span>
+        </div>
+      </div>
+      <div class="status-line fade-up d2">
+        <span class="status-dot">open to opportunities</span><span>·</span><span>backend-focused</span><span>·</span><span>Nigeria</span>
+      </div>
+      <div class="cv-btn-row fade-up d3">
+        <a href="./Kamsi_Oyinatumba_CV.pdf" download class="cv-btn cv-btn-primary"><span class="cv-btn-icon">↓</span> Download CV</a>
+        <a href="./Kamsi_Oyinatumba_CV.pdf" target="_blank" class="cv-btn cv-btn-secondary"><span class="cv-btn-icon">⧉</span> View CV</a>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">ls -la ./skills</span></div>
+      <div class="section-label fade-up">stack</div>
+      <div class="skills-group fade-up d1">
+        <div class="skills-group-label">// core — backend</div>
+        <div class="ls-grid">
+          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>Java 21</div><div class="ls-item-type">primary language</div></div>
+          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>Spring Boot 3.2</div><div class="ls-item-type">framework</div></div>
+          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>Spring Security</div><div class="ls-item-type">auth &amp; access</div></div>
+          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>REST APIs</div><div class="ls-item-type">architecture</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>JWT / RBAC</div><div class="ls-item-type">auth tokens</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>JPA / Hibernate</div><div class="ls-item-type">ORM</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Flyway</div><div class="ls-item-type">db migrations</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>MapStruct</div><div class="ls-item-type">entity mapping</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>PostgreSQL</div><div class="ls-item-type">database</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>MySQL</div><div class="ls-item-type">database</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>AWS S3</div><div class="ls-item-type">file storage</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Paystack</div><div class="ls-item-type">payments</div></div>
+        </div>
+      </div>
+      <div class="skills-group fade-up d2" style="margin-top:16px">
+        <div class="skills-group-label">// tooling &amp; devops</div>
+        <div class="ls-grid">
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Docker</div><div class="ls-item-type">containerisation</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Git / GitHub</div><div class="ls-item-type">version control</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Postman</div><div class="ls-item-type">api testing</div></div>
+          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>BCrypt</div><div class="ls-item-type">password hashing</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">cat ./experience.log</span></div>
+      <div class="section-label fade-up">experience</div>
+      <div class="exp-list fade-up d1">
+        <div class="exp-item">
+          <div>
+            <div class="exp-company">HNG Tech</div>
+            <div class="exp-title">Backend Developer Intern · Lagos (Remote)</div>
+            <ul class="exp-bullets">
+              <li>Built and shipped backend API features in a fast-paced, deadline-driven collaborative team.</li>
+              <li>Tested and validated endpoints with Postman; participated in debugging and issue resolution.</li>
+              <li>Implemented request handling and structured error management for REST API endpoints.</li>
+              <li>Contributed via Git/GitHub — commits, pull requests, and code reviews on shared repositories.</li>
+            </ul>
+          </div>
+          <div class="exp-date">Jul – Sep 2024</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">git log --oneline --all</span></div>
+      <div class="section-label fade-up">projects</div>
+      <div class="git-log">
+
+        <!-- TrustVault — with iframe -->
+        <div class="commit fade-up d1">
+          <div class="commit-top">
+            <div class="commit-hash">a4f91c2</div>
+            <div>
+              <div class="commit-title">TrustVault — Production Fintech Escrow Platform</div>
+              <div class="commit-body">A fully-featured P2P escrow platform acting as a trusted third party — securing buyer funds and releasing them only when transaction conditions are met. Microservice-inspired monolithic architecture with enterprise-grade safety throughout.</div>
+              <ul class="commit-features">
+                <li>State-machine engine: CREATED → ACCEPTED → FUNDED → FULFILLED → RELEASED (or DISPUTED / CANCELLED)</li>
+                <li>Paystack webhook pipeline — automated payment confirmation, escrow hold, and seller payout transfers</li>
+                <li>Dispute resolution center with evidence uploads (image/doc) piped securely to AWS S3</li>
+                <li>Automated KYC pipeline — NIN + DOB verification against federal identity database</li>
+                <li>Enterprise admin panel with granular RBAC (Super Admin, Compliance Officer, Finance Admin)</li>
+                <li>Live system config — fee percentages, hold durations, escrow limits tweakable in real time</li>
+                <li>Analytics via Recharts — revenue timelines, dispute ratios, transaction volume; exportable to PDF</li>
+                <li>Flyway migrations, MapStruct entity mapping, Resend email delivery, AWS S3 document storage</li>
+              </ul>
+              <div class="commit-meta">
+                <span class="commit-lang lang-java">Java 21</span>
+                <span class="commit-lang lang-spring">Spring Boot 3.2</span>
+                <span class="commit-lang lang-sql">PostgreSQL</span>
+                <span class="commit-lang lang-jwt">Spring Security</span>
+                <span class="commit-lang lang-react">React 18</span>
+                <span class="commit-lang lang-ts">TypeScript</span>
+                <span class="commit-lang lang-docker">Docker</span>
+                <span class="commit-status">active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Preview -->
+          <div class="live-preview">
+            <div class="preview-bar">
+              <div class="preview-bar-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="preview-url">trustvault-escrow-fznr.vercel.app</div>
+              <div class="preview-live-badge">LIVE</div>
+              <a class="preview-open-btn" href="https://trustvault-escrow-fznr.vercel.app" target="_blank">↗ open</a>
+            </div>
+            <div class="iframe-wrap">
+              <div class="iframe-loader" id="iframe-loader">
+                <div class="loader-spinner"></div>
+                <div class="loader-text">LOADING LIVE PREVIEW...</div>
+              </div>
+              <iframe
+                src="https://trustvault-escrow-fznr.vercel.app"
+                title="TrustVault Escrow — Live Preview"
+                loading="lazy"
+                onload="document.getElementById('iframe-loader').classList.add('hidden')"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+              ></iframe>
+              <div class="iframe-overlay"></div>
+              <div class="iframe-scanline"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- JWT Auth -->
+        <div class="commit fade-up d2">
+          <div class="commit-top">
+            <div class="commit-hash">3b8d440</div>
+            <div>
+              <div class="commit-title">JWT Authentication &amp; Authorisation API</div>
+              <div class="commit-body">Secure RESTful auth system with stateless JWT, custom Spring Security filter chain, BCrypt password hashing, role-based access control, and structured exception handling.</div>
+              <div class="commit-meta">
+                <span class="commit-lang lang-java">Java</span>
+                <span class="commit-lang lang-spring">Spring Security</span>
+                <span class="commit-lang lang-jwt">JWT</span>
+                <span class="commit-lang lang-sql">MySQL</span>
+                <a class="commit-link" href="https://github.com/kamscodes/auth-api-jwt" target="_blank">→ github</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CRUD -->
+        <div class="commit fade-up d3">
+          <div class="commit-top">
+            <div class="commit-hash">7c2e91f</div>
+            <div>
+              <div class="commit-title">Employee Management CRUD API</div>
+              <div class="commit-body">Spring Boot REST API for full employee record management following layered architecture (Controller, Service, Repository) with global exception handling via Controller Advice.</div>
+              <div class="commit-meta">
+                <span class="commit-lang lang-java">Java</span>
+                <span class="commit-lang lang-spring">Spring Boot</span>
+                <span class="commit-lang lang-sql">MySQL / JPA</span>
+                <a class="commit-link" href="https://github.com/kamscodes/crud-rest-api" target="_blank">→ github</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">cat .env.contact</span></div>
+      <div class="section-label fade-up">contact</div>
+      <div class="env-block fade-up d1">
+        <a class="env-row" href="mailto:Oyinatumbakamsi4@gmail.com"><span class="env-key">EMAIL</span><span class="env-eq">=</span><span class="env-val link">Oyinatumbakamsi4@gmail.com</span></a>
+        <a class="env-row" href="tel:+2349020180951"><span class="env-key">PHONE</span><span class="env-eq">=</span><span class="env-val link">+234 902 018 0951</span></a>
+        <a class="env-row" href="https://github.com/kamscodes" target="_blank"><span class="env-key">GITHUB</span><span class="env-eq">=</span><span class="env-val link">github.com/kamscodes</span></a>
+        <div class="env-row"><span class="env-key">EDUCATION</span><span class="env-eq">=</span><span class="env-val" style="color:var(--text-dim)">B.Sc Quantity Surveying · Nnamdi Azikiwe University (2025)</span></div>
+        <div class="env-row"><span class="env-key">STATUS</span><span class="env-eq">=</span><span class="env-val" style="color:var(--green)">open_to_opportunities</span></div>
+      </div>
+    </section>
+
+  </main>
+  <footer>
+    <div class="footer-identity">
+      <img id="footer-avatar" class="footer-avatar" src="data:image/jpeg;base64,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" alt="Oyinatumba Kamsi" />
+      <span>© 2025 Oyinatumba Kamsi · Software Developer · Backend Specialist</span>
+    </div>
+    <div><span>exit code: 0</span> · java --version &amp;&amp; echo "ready"</div>
+  </footer>
+</div>
+
+<script>
+/* Loading */
+const loadBar=document.getElementById('load-bar'),loadPct=document.getElementById('load-pct'),loadScreen=document.getElementById('loading'),mainContent=document.getElementById('main-content');
+let pct=0;
+const li=setInterval(()=>{pct+=Math.random()*18;if(pct>=100){pct=100;clearInterval(li);setTimeout(done,300)}loadBar.style.width=pct+'%';loadPct.textContent=Math.floor(pct)+'%';},80);
+function done(){loadScreen.classList.add('done');mainContent.style.opacity='1';triggerEntrance();}
+
+/* Matrix */
+const mc=document.getElementById('matrix-canvas'),mctx=mc.getContext('2d');
+const mchars='アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF><{}[]()=+-*/&|^%$#@!?;:'.split('');
+const mfs=14;let mcols,mdrops;
+function mresize(){mc.width=window.innerWidth;mc.height=window.innerHeight;mcols=Math.floor(mc.width/mfs);mdrops=Array.from({length:mcols},()=>Math.random()*-100);}
+function mdraw(){mctx.fillStyle='rgba(10,13,10,0.05)';mctx.fillRect(0,0,mc.width,mc.height);for(let i=0;i<mdrops.length;i++){const ch=mchars[Math.floor(Math.random()*mchars.length)];const y=mdrops[i]*mfs,x=i*mfs;if(mdrops[i]>0){mctx.fillStyle='#ccffe0';mctx.font=`bold ${mfs}px 'JetBrains Mono',monospace`;mctx.fillText(ch,x,y);}const g=Math.floor(180+Math.random()*75);mctx.fillStyle=`rgba(0,${g},80,0.85)`;mctx.font=`${mfs}px 'JetBrains Mono',monospace`;mctx.fillText(mchars[Math.floor(Math.random()*mchars.length)],x,y-mfs);if(y>mc.height&&Math.random()>0.975)mdrops[i]=0;mdrops[i]+=0.5;}}
+mresize();window.addEventListener('resize',mresize);setInterval(mdraw,40);
+
+/* Particles */
+const pc=document.getElementById('particle-canvas'),pctx=pc.getContext('2d');
+let particles=[];
+function presize(){pc.width=window.innerWidth;pc.height=window.innerHeight;}
+presize();window.addEventListener('resize',presize);
+class Particle{constructor(x,y){this.x=x;this.y=y;this.vx=(Math.random()-.5)*2;this.vy=(Math.random()-.5)*2-1;this.life=1;this.decay=0.015+Math.random()*.02;this.size=Math.random()*2+.5;this.color=Math.random()>.7?'#00ff88':Math.random()>.5?'#00cc6a':'#ffaa00';}update(){this.x+=this.vx;this.y+=this.vy;this.vy+=.04;this.life-=this.decay;}draw(){pctx.save();pctx.globalAlpha=this.life*.6;pctx.fillStyle=this.color;pctx.shadowBlur=6;pctx.shadowColor=this.color;pctx.beginPath();pctx.arc(this.x,this.y,this.size,0,Math.PI*2);pctx.fill();pctx.restore();}}
+let sth=0;
+window.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;sth++;if(sth%3===0)for(let i=0;i<2;i++)particles.push(new Particle(mouseX,mouseY));});
+function ploop(){pctx.clearRect(0,0,pc.width,pc.height);particles=particles.filter(p=>p.life>0);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(ploop);}
+ploop();
+
+/* Cursor */
+const cur=document.getElementById('cursor'),curRing=document.getElementById('cursor-ring');
+let cx=0,cy=0,rx=0,ry=0,mouseX=0,mouseY=0;
+window.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;});
+function curLoop(){rx+=(cx-rx)*.12;ry+=(cy-ry)*.12;cur.style.left=cx+'px';cur.style.top=cy+'px';curRing.style.left=rx+'px';curRing.style.top=ry+'px';requestAnimationFrame(curLoop);}
+curLoop();
+document.querySelectorAll('a,button,.ls-item,.commit,.tag,.dot').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.5)';cur.style.background='var(--amber)';curRing.style.width='48px';curRing.style.height='48px';curRing.style.borderColor='var(--amber)';curRing.style.opacity='0.8';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';cur.style.background='var(--green)';curRing.style.width='32px';curRing.style.height='32px';curRing.style.borderColor='var(--green)';curRing.style.opacity='0.5';});
+});
+
+/* 3D tilt */
+const heroCard=document.getElementById('hero-card');
+if(heroCard){heroCard.addEventListener('mousemove',e=>{const r=heroCard.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;heroCard.style.transform=`perspective(600px) rotateX(${-y*6}deg) rotateY(${x*6}deg) translateZ(4px)`;heroCard.style.boxShadow=`${-x*20}px ${-y*20}px 40px rgba(0,255,136,0.08)`;});heroCard.addEventListener('mouseleave',()=>{heroCard.style.transform='';heroCard.style.boxShadow='';});}
+document.querySelectorAll('.ls-item').forEach(card=>{card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(300px) rotateX(${-y*10}deg) rotateY(${x*10}deg) translateY(-3px)`;card.style.setProperty('--mx',(e.clientX-r.left)/r.width*100+'%');card.style.setProperty('--my',(e.clientY-r.top)/r.height*100+'%');});card.addEventListener('mouseleave',()=>{card.style.transform='';});});
+document.querySelectorAll('.commit').forEach(card=>{card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(800px) rotateX(${-y*2}deg) rotateY(${x*2}deg)`;});card.addEventListener('mouseleave',()=>{card.style.transform='';});});
+
+/* Entrance */
+function triggerEntrance(){const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));}
+
+/* Nav */
+const navLinks=document.querySelectorAll('nav a');
+const navObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const a=document.querySelector(`nav a[href="#${e.target.id}"]`);if(a)a.classList.add('active');}});},{threshold:0.4});
+document.querySelectorAll('section').forEach(s=>navObs.observe(s));
+navLinks.forEach(l=>l.addEventListener('click',e=>{e.preventDefault();document.querySelector(l.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});}));
+
+/* Glitch hero name */
+const heroName=document.querySelector('.hero-name');
+if(heroName)setInterval(()=>{if(Math.random()>.85){heroName.style.textShadow='-2px 0 #ff0040,2px 0 #00ffff,0 0 20px rgba(0,255,136,0.5)';setTimeout(()=>{heroName.style.textShadow='0 0 20px rgba(0,255,136,0.3)';},80);}},2000);
+</script>
+</body>
+</html>
