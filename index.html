@@ -1,290 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Kamsi — Backend Developer</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="./style.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kamsi — Software Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-<div id="loading">
-  <div class="load-text">INITIALIZING PORTFOLIO...</div>
-  <div class="load-bar-wrap"><div class="load-bar" id="load-bar"></div></div>
-  <div class="load-pct" id="load-pct">0%</div>
-</div>
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-<canvas id="matrix-canvas"></canvas>
-<canvas id="particle-canvas"></canvas>
 
-<div class="terminal-window" id="main-content" style="opacity:0;transition:opacity 0.8s">
-  <div class="titlebar">
-    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-    <div class="titlebar-name">kamsi@portfolio ~ <span>zsh</span><span class="type-cursor"></span></div>
-  </div>
-  <nav>
-    <a href="#about" class="active">about</a>
-    <a href="#skills">skills</a>
-    <a href="#experience">experience</a>
-    <a href="#projects">projects</a>
-    <a href="#contact">contact</a>
-  </nav>
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#home" class="nav-logo">
+        <span class="logo-normal">Kamsi</span> <strong class="logo-bold">Oyinatumba</strong>
+      </a>
+
+      <button
+        type="button"
+        class="nav-toggle hamburger"
+        id="nav-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="nav-links"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      <nav aria-label="Primary Navigation">
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#home" class="nav-link active">Home</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#experience" class="nav-link">Experience</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
   <main>
 
-    <!-- ABOUT -->
-    <section id="about">
-      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">whoami</span></div>
-      <div class="hero-output fade-up d1" id="hero-card">
-        <div class="hero-name">Kamsi Oyinatumba</div>
-        <div class="hero-role">Software Developer · <span>Java, Spring Boot &amp; Next.js</span></div>
-        <div class="hero-bio">I build complete software products, from the database and APIs to the interface your customers actually use. I work with businesses to turn ideas into fast, secure, production-ready websites and web apps — whether that's an e-commerce store, a client-facing platform, or a custom internal tool.<br><br>My backend foundation is <strong style="color:var(--green)">Java and Spring Boot</strong>: REST APIs, JWT authentication, role-based access control, and database-driven architecture. On the front end I build with <strong style="color:var(--green)">Next.js</strong>, so I can own a project end to end instead of handing it off halfway.<br><br>My flagship project is <strong style="color:var(--green)">TrustVault</strong>, a fintech escrow platform featuring a state-machine transaction engine, Paystack webhook integration, automated KYC verification, and an enterprise admin control panel.</div>
-        <div class="tag-row">
-          <span class="tag core">Java</span><span class="tag core">Spring Boot</span><span class="tag core">Next.js</span><span class="tag core">REST APIs</span>
-          <span class="tag">Spring Security</span><span class="tag">PostgreSQL</span><span class="tag">JPA / Hibernate</span><span class="tag">JWT</span><span class="tag">Docker</span><span class="tag">Git</span><span class="tag">Postman</span>
+    <!-- HERO -->
+    <section id="home" class="hero">
+      <div class="container hero-container">
+        <div class="hero-content fade-in">
+          <p class="hero-greeting">Hello, I'm</p>
+          <h1 class="hero-name">Kamsi Oyinatumba</h1>
+          <h2 class="hero-role">And I'm a <span class="accent">Software Developer</span></h2>
+          <p class="hero-bio">
+            I build complete software products, from the database and APIs to the interface your customers actually use. I work with businesses to turn ideas into fast, secure, production-ready websites and web apps — whether that's an e-commerce store, a client-facing platform, or a custom internal tool.
+          </p>
+
+          <div class="social-links" aria-label="Social Links">
+            <a href="https://github.com/kamscodes" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub" title="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+            </a>
+
+            <a href="mailto:Oyinatumbakamsi4@gmail.com" class="social-link" aria-label="Email" title="Email">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </a>
+
+            <a href="tel:+2349020180951" class="social-link" aria-label="Phone" title="Phone">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </a>
+
+            <a href="#" class="social-link" aria-label="LinkedIn" title="LinkedIn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+            </a>
+          </div>
+
+          <div class="hero-actions">
+            <a href="./Kamsi_Oyinatumba_CV.pdf" download class="btn-cv">Download CV</a>
+          </div>
+        </div>
+
+        <div class="hero-image fade-in">
+          <div class="hero-photo-wrap">
+            <img
+              src="data:image/jpeg;base64,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"
+              alt="Kamsi Oyinatumba"
+              class="hero-photo"
+            />
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="cv-btn-row fade-up d3">
-        <a href="./Kamsi_Oyinatumba_CV.pdf" download class="cv-btn cv-btn-primary"><span class="cv-btn-icon">↓</span> Download CV</a>
-        <a href="./Kamsi_Oyinatumba_CV.pdf" target="_blank" class="cv-btn cv-btn-secondary"><span class="cv-btn-icon">⧉</span> View CV</a>
+    <!-- ABOUT -->
+    <section id="about" class="section about-section">
+      <div class="container">
+        <h2 class="section-title fade-in">About Me</h2>
+        <div class="about-card fade-in">
+          <p class="about-text">
+            My backend foundation is <strong>Java and Spring Boot</strong>: REST APIs, JWT authentication, role-based access control, and database-driven architecture. On the front end I build with <strong>Next.js</strong>, so I can own a project end to end instead of handing it off halfway.
+          </p>
+          <p class="about-text">
+            My flagship project is <strong>TrustVault</strong>, a fintech escrow platform featuring a state-machine transaction engine, Paystack webhook integration, automated KYC verification, and an enterprise admin control panel.
+          </p>
+          <p class="about-text accent-note">
+            Open to freelance, contract, and full-time opportunities. Let's build something.
+          </p>
+        </div>
       </div>
     </section>
 
     <!-- SKILLS -->
-    <section id="skills">
-      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">ls -la ./skills</span></div>
-      <div class="section-label fade-up">stack</div>
-      <div class="skills-group fade-up d1">
-        <div class="skills-group-label">// core — backend</div>
-        <div class="ls-grid">
-          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>Java 21</div><div class="ls-item-type">primary language</div></div>
-          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>Spring Boot 3.2</div><div class="ls-item-type">framework</div></div>
-          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>Spring Security</div><div class="ls-item-type">auth &amp; access</div></div>
-          <div class="ls-item primary"><div class="ls-item-name"><span class="ls-item-icon">★</span>REST APIs</div><div class="ls-item-type">architecture</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>JWT / RBAC</div><div class="ls-item-type">auth tokens</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>JPA / Hibernate</div><div class="ls-item-type">ORM</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Flyway</div><div class="ls-item-type">db migrations</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>MapStruct</div><div class="ls-item-type">entity mapping</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>PostgreSQL</div><div class="ls-item-type">database</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>MySQL</div><div class="ls-item-type">database</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>AWS S3</div><div class="ls-item-type">file storage</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Paystack</div><div class="ls-item-type">payments</div></div>
+    <section id="skills" class="section skills-section">
+      <div class="container">
+        <h2 class="section-title fade-in">Skills</h2>
+
+        <div class="skills-group fade-in">
+          <h3 class="skills-group-title">Core — Backend</h3>
+          <div class="skills-grid">
+            <div class="skill-card">
+              <span class="skill-name">Java 21</span>
+              <span class="skill-type">Primary Language</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">Spring Boot 3.2</span>
+              <span class="skill-type">Framework</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">Spring Security</span>
+              <span class="skill-type">Auth &amp; Access</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">REST APIs</span>
+              <span class="skill-type">Architecture</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">JWT/RBAC</span>
+              <span class="skill-type">Auth Tokens</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">JPA/Hibernate</span>
+              <span class="skill-type">ORM</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">Flyway</span>
+              <span class="skill-type">DB Migrations</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">MapStruct</span>
+              <span class="skill-type">Entity Mapping</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">PostgreSQL</span>
+              <span class="skill-type">Database</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">MySQL</span>
+              <span class="skill-type">Database</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">AWS S3</span>
+              <span class="skill-type">File Storage</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">Paystack</span>
+              <span class="skill-type">Payments</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="skills-group fade-up d2" style="margin-top:16px">
-        <div class="skills-group-label">// tooling &amp; devops</div>
-        <div class="ls-grid">
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Docker</div><div class="ls-item-type">containerisation</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Git / GitHub</div><div class="ls-item-type">version control</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>Postman</div><div class="ls-item-type">api testing</div></div>
-          <div class="ls-item"><div class="ls-item-name"><span class="ls-item-icon">▸</span>BCrypt</div><div class="ls-item-type">password hashing</div></div>
+
+        <div class="skills-group fade-in">
+          <h3 class="skills-group-title">Tooling &amp; DevOps</h3>
+          <div class="skills-grid">
+            <div class="skill-card">
+              <span class="skill-name">Docker</span>
+              <span class="skill-type">Containerisation</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">Git/GitHub</span>
+              <span class="skill-type">Version Control</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">Postman</span>
+              <span class="skill-type">API Testing</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">BCrypt</span>
+              <span class="skill-type">Password Hashing</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skills-group fade-in">
+          <h3 class="skills-group-title">Frontend</h3>
+          <div class="skills-grid">
+            <div class="skill-card">
+              <span class="skill-name">Next.js</span>
+              <span class="skill-type">React Framework</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">React</span>
+              <span class="skill-type">UI Library</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-name">TypeScript</span>
+              <span class="skill-type">Type Safety</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- EXPERIENCE -->
-    <section id="experience">
-      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">cat ./experience.log</span></div>
-      <div class="section-label fade-up">experience</div>
-      <div class="exp-list fade-up d1">
-        <div class="exp-item">
-          <div>
-            <div class="exp-company">HNG Tech</div>
-            <div class="exp-title">Backend Developer Intern · Lagos (Remote)</div>
-            <ul class="exp-bullets">
+    <section id="experience" class="section experience-section">
+      <div class="container">
+        <h2 class="section-title fade-in">Experience</h2>
+
+        <div class="experience-list">
+          <article class="experience-card fade-in">
+            <div class="experience-header">
+              <div>
+                <h3 class="experience-company">HNG Tech</h3>
+                <p class="experience-role">Backend Developer Intern · Lagos (Remote)</p>
+              </div>
+              <span class="experience-date">May – Nov 2024</span>
+            </div>
+            <ul class="experience-bullets">
               <li>Built and shipped backend API features in a fast-paced, deadline-driven collaborative team.</li>
               <li>Tested and validated endpoints with Postman; participated in debugging and issue resolution.</li>
               <li>Implemented request handling and structured error management for REST API endpoints.</li>
               <li>Contributed via Git/GitHub — commits, pull requests, and code reviews on shared repositories.</li>
             </ul>
-          </div>
-          <div class="exp-date">May – Nov 2024</div>
+          </article>
         </div>
       </div>
     </section>
 
     <!-- PROJECTS -->
-    <section id="projects">
-      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">git log --oneline --all</span></div>
-      <div class="section-label fade-up">projects</div>
-      <div class="git-log">
+    <section id="projects" class="section projects-section">
+      <div class="container">
+        <h2 class="section-title fade-in">Projects</h2>
 
-        <!-- TrustVault — with iframe -->
-        <div class="commit fade-up d1">
-          <div class="commit-top">
-            <div class="commit-hash">a4f91c2</div>
-            <div>
-              <div class="commit-title">TrustVault — Production Fintech Escrow Platform</div>
-              <div class="commit-body">A fully-featured P2P escrow platform acting as a trusted third party — securing buyer funds and releasing them only when transaction conditions are met. Microservice-inspired monolithic architecture with enterprise-grade safety throughout.</div>
-              <ul class="commit-features">
-                <li>State-machine engine: CREATED → ACCEPTED → FUNDED → FULFILLED → RELEASED (or DISPUTED / CANCELLED)</li>
-                <li>Paystack webhook pipeline — automated payment confirmation, escrow hold, and seller payout transfers</li>
-                <li>Dispute resolution center with evidence uploads (image/doc) piped securely to AWS S3</li>
-                <li>Automated KYC pipeline — NIN + DOB verification against federal identity database</li>
-                <li>Enterprise admin panel with granular RBAC (Super Admin, Compliance Officer, Finance Admin)</li>
-                <li>Live system config — fee percentages, hold durations, escrow limits tweakable in real time</li>
-                <li>Analytics via Recharts — revenue timelines, dispute ratios, transaction volume; exportable to PDF</li>
-                <li>Flyway migrations, MapStruct entity mapping, Resend email delivery, AWS S3 document storage</li>
-              </ul>
-              <div class="commit-meta">
-                <span class="commit-lang lang-java">Java 21</span>
-                <span class="commit-lang lang-spring">Spring Boot 3.2</span>
-                <span class="commit-lang lang-sql">PostgreSQL</span>
-                <span class="commit-lang lang-jwt">Spring Security</span>
-                <span class="commit-lang lang-react">React 18</span>
-                <span class="commit-lang lang-ts">TypeScript</span>
-                <span class="commit-lang lang-docker">Docker</span>
-                <span class="commit-status">active</span>
-              </div>
-            </div>
-          </div>
+        <div class="projects-grid">
 
-          <!-- Live Preview -->
-          <div class="live-preview">
-            <div class="preview-bar">
-              <div class="preview-bar-dots">
-                <span></span><span></span><span></span>
-              </div>
-              <div class="preview-url">trustvault-escrow-fznr.vercel.app</div>
-              <div class="preview-live-badge">LIVE</div>
-              <a class="preview-open-btn" href="https://trustvault-escrow-fznr.vercel.app" target="_blank">↗ open</a>
+          <!-- Project 1: TrustVault -->
+          <article class="project-card featured fade-in">
+            <div class="project-header">
+              <h3 class="project-title">TrustVault — Production Fintech Escrow Platform</h3>
+              <span class="project-status">Active / Live</span>
             </div>
-            <div class="iframe-wrap">
-              <div class="iframe-loader" id="iframe-loader">
-                <div class="loader-spinner"></div>
-                <div class="loader-text">LOADING LIVE PREVIEW...</div>
-              </div>
-              <iframe
-                src="https://trustvault-escrow-fznr.vercel.app"
-                title="TrustVault Escrow — Live Preview"
-                loading="lazy"
-                onload="document.getElementById('iframe-loader').classList.add('hidden')"
-                sandbox="allow-scripts allow-same-origin allow-forms"
-              ></iframe>
-              <div class="iframe-overlay"></div>
-              <div class="iframe-scanline"></div>
+            <p class="project-description">
+              A fully-featured P2P escrow platform acting as a trusted third party — securing buyer funds and releasing them only when transaction conditions are met.
+            </p>
+            <ul class="project-features">
+              <li>State-machine engine</li>
+              <li>Paystack webhook pipeline</li>
+              <li>Dispute resolution center</li>
+              <li>Automated KYC pipeline</li>
+              <li>Enterprise admin panel</li>
+              <li>Live system config</li>
+              <li>Analytics via Recharts</li>
+              <li>Flyway migrations</li>
+            </ul>
+            <div class="project-tech">
+              <span class="tech-tag">Java 21</span>
+              <span class="tech-tag">Spring Boot 3.2</span>
+              <span class="tech-tag">PostgreSQL</span>
+              <span class="tech-tag">Spring Security</span>
+              <span class="tech-tag">React 18</span>
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">Docker</span>
             </div>
-          </div>
+            <div class="project-links">
+              <a href="https://trustvault-escrow-fznr.vercel.app" target="_blank" rel="noopener noreferrer" class="project-link">
+                Live Platform ↗
+              </a>
+            </div>
+          </article>
+
+          <!-- Project 2: JWT Auth API -->
+          <article class="project-card fade-in">
+            <div class="project-header">
+              <h3 class="project-title">JWT Authentication &amp; Authorisation API</h3>
+            </div>
+            <p class="project-description">
+              Secure RESTful auth system with stateless JWT, custom Spring Security filter chain, BCrypt password hashing, role-based access control.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">Java</span>
+              <span class="tech-tag">Spring Security</span>
+              <span class="tech-tag">JWT</span>
+              <span class="tech-tag">MySQL</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/kamscodes/auth-api-jwt" target="_blank" rel="noopener noreferrer" class="project-link">
+                GitHub ↗
+              </a>
+            </div>
+          </article>
+
+          <!-- Project 3: Employee CRUD API -->
+          <article class="project-card fade-in">
+            <div class="project-header">
+              <h3 class="project-title">Employee Management CRUD API</h3>
+            </div>
+            <p class="project-description">
+              Spring Boot REST API for full employee record management following layered architecture.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">Java</span>
+              <span class="tech-tag">Spring Boot</span>
+              <span class="tech-tag">MySQL/JPA</span>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/kamscodes/crud-rest-api" target="_blank" rel="noopener noreferrer" class="project-link">
+                GitHub ↗
+              </a>
+            </div>
+          </article>
+
         </div>
-
-        <!-- JWT Auth -->
-        <div class="commit fade-up d2">
-          <div class="commit-top">
-            <div class="commit-hash">3b8d440</div>
-            <div>
-              <div class="commit-title">JWT Authentication &amp; Authorisation API</div>
-              <div class="commit-body">Secure RESTful auth system with stateless JWT, custom Spring Security filter chain, BCrypt password hashing, role-based access control, and structured exception handling.</div>
-              <div class="commit-meta">
-                <span class="commit-lang lang-java">Java</span>
-                <span class="commit-lang lang-spring">Spring Security</span>
-                <span class="commit-lang lang-jwt">JWT</span>
-                <span class="commit-lang lang-sql">MySQL</span>
-                <a class="commit-link" href="https://github.com/kamscodes/auth-api-jwt" target="_blank">→ github</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CRUD -->
-        <div class="commit fade-up d3">
-          <div class="commit-top">
-            <div class="commit-hash">7c2e91f</div>
-            <div>
-              <div class="commit-title">Employee Management CRUD API</div>
-              <div class="commit-body">Spring Boot REST API for full employee record management following layered architecture (Controller, Service, Repository) with global exception handling via Controller Advice.</div>
-              <div class="commit-meta">
-                <span class="commit-lang lang-java">Java</span>
-                <span class="commit-lang lang-spring">Spring Boot</span>
-                <span class="commit-lang lang-sql">MySQL / JPA</span>
-                <a class="commit-link" href="https://github.com/kamscodes/crud-rest-api" target="_blank">→ github</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
 
     <!-- CONTACT -->
-    <section id="contact">
-      <div class="prompt fade-up"><span class="prompt-user">kamsi</span><span class="prompt-at">@</span><span class="prompt-dir">portfolio</span><span class="prompt-char">$</span><span class="prompt-cmd">cat .env.contact</span></div>
-      <div class="section-label fade-up">contact</div>
-      <div class="env-block fade-up d1">
-        <a class="env-row" href="mailto:Oyinatumbakamsi4@gmail.com"><span class="env-key">EMAIL</span><span class="env-eq">=</span><span class="env-val link">Oyinatumbakamsi4@gmail.com</span></a>
-        <a class="env-row" href="tel:+2349020180951"><span class="env-key">PHONE</span><span class="env-eq">=</span><span class="env-val link">+234 902 018 0951</span></a>
-        <a class="env-row" href="https://github.com/kamscodes" target="_blank"><span class="env-key">GITHUB</span><span class="env-eq">=</span><span class="env-val link">github.com/kamscodes</span></a>
-        <div class="env-row"><span class="env-key">EDUCATION</span><span class="env-eq">=</span><span class="env-val" style="color:var(--text-dim)">B.Sc Quantity Surveying · Nnamdi Azikiwe University (2025)</span></div>
-        <div class="env-row"><span class="env-key">STATUS</span><span class="env-eq">=</span><span class="env-val" style="color:var(--green)">open_to_opportunities</span></div>
+    <section id="contact" class="section contact-section">
+      <div class="container">
+        <h2 class="section-title fade-in">Contact</h2>
+
+        <div class="contact-grid">
+          <a href="mailto:Oyinatumbakamsi4@gmail.com" class="contact-card fade-in">
+            <span class="contact-label">Email</span>
+            <span class="contact-value">Oyinatumbakamsi4@gmail.com</span>
+          </a>
+
+          <a href="tel:+2349020180951" class="contact-card fade-in">
+            <span class="contact-label">Phone</span>
+            <span class="contact-value">+234 902 018 0951</span>
+          </a>
+
+          <a href="https://github.com/kamscodes" target="_blank" rel="noopener noreferrer" class="contact-card fade-in">
+            <span class="contact-label">GitHub</span>
+            <span class="contact-value">github.com/kamscodes</span>
+          </a>
+
+          <div class="contact-card fade-in">
+            <span class="contact-label">Education</span>
+            <span class="contact-value">B.Sc Quantity Surveying · Nnamdi Azikiwe University (2025)</span>
+          </div>
+        </div>
       </div>
     </section>
 
   </main>
-  <footer>
-    <div class="footer-identity">
-      <img id="footer-avatar" class="footer-avatar" src="data:image/jpeg;base64,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" alt="Oyinatumba Kamsi" />
-      <span>© 2025 Oyinatumba Kamsi · Software Developer · Backend Specialist</span>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Kamsi Oyinatumba &middot; Software Developer</p>
     </div>
-    <div><span>exit code: 0</span> · java --version &amp;&amp; echo "ready"</div>
   </footer>
-</div>
 
-<script>
-/* Loading */
-const loadBar=document.getElementById('load-bar'),loadPct=document.getElementById('load-pct'),loadScreen=document.getElementById('loading'),mainContent=document.getElementById('main-content');
-let pct=0;
-const li=setInterval(()=>{pct+=Math.random()*18;if(pct>=100){pct=100;clearInterval(li);setTimeout(done,300)}loadBar.style.width=pct+'%';loadPct.textContent=Math.floor(pct)+'%';},80);
-function done(){loadScreen.classList.add('done');mainContent.style.opacity='1';triggerEntrance();}
+  <script>
+    (function () {
+      // Fade-in on scroll using IntersectionObserver
+      const fadeElements = document.querySelectorAll('.fade-in');
+      if ('IntersectionObserver' in window) {
+        const fadeObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -30px 0px' }
+        );
+        fadeElements.forEach((el) => fadeObserver.observe(el));
+      } else {
+        fadeElements.forEach((el) => el.classList.add('visible'));
+      }
 
-/* Matrix */
-const mc=document.getElementById('matrix-canvas'),mctx=mc.getContext('2d');
-const mchars='アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF><{}[]()=+-*/&|^%$#@!?;:'.split('');
-const mfs=14;let mcols,mdrops;
-function mresize(){mc.width=window.innerWidth;mc.height=window.innerHeight;mcols=Math.floor(mc.width/mfs);mdrops=Array.from({length:mcols},()=>Math.random()*-100);}
-function mdraw(){mctx.fillStyle='rgba(10,13,10,0.05)';mctx.fillRect(0,0,mc.width,mc.height);for(let i=0;i<mdrops.length;i++){const ch=mchars[Math.floor(Math.random()*mchars.length)];const y=mdrops[i]*mfs,x=i*mfs;if(mdrops[i]>0){mctx.fillStyle='#ccffe0';mctx.font=`bold ${mfs}px 'JetBrains Mono',monospace`;mctx.fillText(ch,x,y);}const g=Math.floor(180+Math.random()*75);mctx.fillStyle=`rgba(0,${g},80,0.85)`;mctx.font=`${mfs}px 'JetBrains Mono',monospace`;mctx.fillText(mchars[Math.floor(Math.random()*mchars.length)],x,y-mfs);if(y>mc.height&&Math.random()>0.975)mdrops[i]=0;mdrops[i]+=0.5;}}
-mresize();window.addEventListener('resize',mresize);setInterval(mdraw,40);
+      // Mobile nav toggle
+      const navToggle = document.getElementById('nav-toggle');
+      const navLinksList = document.getElementById('nav-links');
+      const navLinks = document.querySelectorAll('.nav-link');
 
-/* Particles */
-const pc=document.getElementById('particle-canvas'),pctx=pc.getContext('2d');
-let particles=[];
-function presize(){pc.width=window.innerWidth;pc.height=window.innerHeight;}
-presize();window.addEventListener('resize',presize);
-class Particle{constructor(x,y){this.x=x;this.y=y;this.vx=(Math.random()-.5)*2;this.vy=(Math.random()-.5)*2-1;this.life=1;this.decay=0.015+Math.random()*.02;this.size=Math.random()*2+.5;this.color=Math.random()>.7?'#00ff88':Math.random()>.5?'#00cc6a':'#ffaa00';}update(){this.x+=this.vx;this.y+=this.vy;this.vy+=.04;this.life-=this.decay;}draw(){pctx.save();pctx.globalAlpha=this.life*.6;pctx.fillStyle=this.color;pctx.shadowBlur=6;pctx.shadowColor=this.color;pctx.beginPath();pctx.arc(this.x,this.y,this.size,0,Math.PI*2);pctx.fill();pctx.restore();}}
-let sth=0;
-window.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;sth++;if(sth%3===0)for(let i=0;i<2;i++)particles.push(new Particle(mouseX,mouseY));});
-function ploop(){pctx.clearRect(0,0,pc.width,pc.height);particles=particles.filter(p=>p.life>0);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(ploop);}
-ploop();
+      function closeMobileNav() {
+        if (!navLinksList || !navToggle) return;
+        navLinksList.classList.remove('open', 'active');
+        navToggle.classList.remove('active');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
 
-/* Cursor */
-const cur=document.getElementById('cursor'),curRing=document.getElementById('cursor-ring');
-let cx=0,cy=0,rx=0,ry=0,mouseX=0,mouseY=0;
-window.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;});
-function curLoop(){rx+=(cx-rx)*.12;ry+=(cy-ry)*.12;cur.style.left=cx+'px';cur.style.top=cy+'px';curRing.style.left=rx+'px';curRing.style.top=ry+'px';requestAnimationFrame(curLoop);}
-curLoop();
-document.querySelectorAll('a,button,.ls-item,.commit,.tag,.dot').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.5)';cur.style.background='var(--amber)';curRing.style.width='48px';curRing.style.height='48px';curRing.style.borderColor='var(--amber)';curRing.style.opacity='0.8';});
-  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';cur.style.background='var(--green)';curRing.style.width='32px';curRing.style.height='32px';curRing.style.borderColor='var(--green)';curRing.style.opacity='0.5';});
-});
+      if (navToggle && navLinksList) {
+        navToggle.addEventListener('click', () => {
+          const isOpen = navLinksList.classList.toggle('open');
+          navLinksList.classList.toggle('active', isOpen);
+          navToggle.classList.toggle('active', isOpen);
+          navToggle.setAttribute('aria-expanded', String(isOpen));
+        });
 
-/* 3D tilt */
-const heroCard=document.getElementById('hero-card');
-if(heroCard){heroCard.addEventListener('mousemove',e=>{const r=heroCard.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;heroCard.style.transform=`perspective(600px) rotateX(${-y*6}deg) rotateY(${x*6}deg) translateZ(4px)`;heroCard.style.boxShadow=`${-x*20}px ${-y*20}px 40px rgba(0,255,136,0.08)`;});heroCard.addEventListener('mouseleave',()=>{heroCard.style.transform='';heroCard.style.boxShadow='';});}
-document.querySelectorAll('.ls-item').forEach(card=>{card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(300px) rotateX(${-y*10}deg) rotateY(${x*10}deg) translateY(-3px)`;card.style.setProperty('--mx',(e.clientX-r.left)/r.width*100+'%');card.style.setProperty('--my',(e.clientY-r.top)/r.height*100+'%');});card.addEventListener('mouseleave',()=>{card.style.transform='';});});
-document.querySelectorAll('.commit').forEach(card=>{card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(800px) rotateX(${-y*2}deg) rotateY(${x*2}deg)`;});card.addEventListener('mouseleave',()=>{card.style.transform='';});});
+        document.addEventListener('click', (event) => {
+          if (
+            navLinksList.classList.contains('open') &&
+            !navLinksList.contains(event.target) &&
+            !navToggle.contains(event.target)
+          ) {
+            closeMobileNav();
+          }
+        });
 
-/* Entrance */
-function triggerEntrance(){const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));}
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') {
+            closeMobileNav();
+          }
+        });
+      }
 
-/* Nav */
-const navLinks=document.querySelectorAll('nav a');
-const navObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const a=document.querySelector(`nav a[href="#${e.target.id}"]`);if(a)a.classList.add('active');}});},{threshold:0.4});
-document.querySelectorAll('section').forEach(s=>navObs.observe(s));
-navLinks.forEach(l=>l.addEventListener('click',e=>{e.preventDefault();document.querySelector(l.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});}));
+      // Smooth scroll for nav links and brand logo
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', (event) => {
+          const targetId = anchor.getAttribute('href');
+          if (!targetId || targetId === '#') return;
+          const targetEl = document.querySelector(targetId);
+          if (targetEl) {
+            event.preventDefault();
+            targetEl.scrollIntoView({ behavior: 'smooth' });
+            closeMobileNav();
+          }
+        });
+      });
 
-/* Glitch hero name */
-const heroName=document.querySelector('.hero-name');
-if(heroName)setInterval(()=>{if(Math.random()>.85){heroName.style.textShadow='-2px 0 #ff0040,2px 0 #00ffff,0 0 20px rgba(0,255,136,0.5)';setTimeout(()=>{heroName.style.textShadow='0 0 20px rgba(0,255,136,0.3)';},80);}},2000);
-</script>
+      // Highlight active nav link on scroll
+      const sections = document.querySelectorAll('main section[id]');
+      if ('IntersectionObserver' in window && sections.length > 0) {
+        const navObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                navLinks.forEach((link) => {
+                  link.classList.toggle(
+                    'active',
+                    link.getAttribute('href') === `#${entry.target.id}`
+                  );
+                });
+              }
+            });
+          },
+          { threshold: 0.35 }
+        );
+        sections.forEach((section) => navObserver.observe(section));
+      }
+    })();
+  </script>
 </body>
 </html>
